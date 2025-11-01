@@ -12,4 +12,5 @@ uint size = 6 //4 bytes <br>
 allocated data region: <br>
 [b0][b1][b2][b3][b4][b5] <br> 
   ^bytes points here <br>
-7. The initializing of data is generally the same across the same for all programs, along with the hashing of lists due to the algorithms being similar across all programs. Where they did differ was in the way they allocated memory. List does so through the 
+7. The initializing of data is generally the same across the same for all programs, along with the hashing of lists due to the algorithms being similar across all programs. Where they did differ was in the way they allocated memory. List does so through the simple iterative declarations of nodes utilizing std::list. Malloc utilized malloc(). alloc used alloca(). And new used new when declaring a new node. <br>
+8. Decreases, the impact to performance starts to become more apparent with the initializing and hashing of bytes rather than allocation. 
