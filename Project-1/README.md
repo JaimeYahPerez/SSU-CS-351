@@ -8,7 +8,7 @@ There is a clear pattern with the increase of time execution in the data per nod
 4. Was there a trend in program execution time based on the length of the block chain? <br>
 There is a clear pattern with the increase of time execution increaseing based on the length of the chains. This time the increase in time is linear of about 4x for tests 200k -> 1M.
 5. Consider heap breaks, what's noticeable? Does increasing the stack size affect the heap? Speculate on any similarities and differences in programs? <br>
-Throughout the heap break tests, the first thing I noticed was that alloca stayed the same throughout every test. List and New grew at the same rates, which also turned out to have the fastest growing number of breaks. Increasing the stack size does not affect the number of heap breaks needed, as they will still expand as needed.
+Throughout the heap break tests, the first thing I noticed was that alloca stayed the same throughout every test. List and New grew at the same rates, which also turned out to have the fastest growing number of breaks. Increasing the stack size does not affect the number of heap breaks needed, as they will still expand as needed. <br>
 6.Considering either the malloc.cpp or alloca.cpp versions of the program, generate a diagram showing two Nodes. Include in the diagram <br>
 the relationship of the head, tail, and Node next pointers. <br>
 show the size (in bytes) and structure of a Node that allocated six bytes of data <br>
