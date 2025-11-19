@@ -1,6 +1,7 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <list>
 #include <numeric>
 #include <vector>
 
@@ -39,7 +40,7 @@ struct Node {
     }
 };
 
-using Nodes = std::list<Node>;
+using Nodes = list<Node>;
 
 Size getNumBytesForBlock() {
     const Size MinBytes = MIN_BYTES;
