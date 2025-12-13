@@ -135,7 +135,6 @@ int main(int argc, char* argv[]) {
     //   (really, you'll need to add four lines to this, one of which is a
     //      closing brace :-)   
     //
-    size_t chunkSize = numSamples / numThreads;
 
     for (size_t id = 0; id < threads.size(); ++id) {
         threads[id] = std::jthread{ [&, id]() {
