@@ -6,7 +6,9 @@
 #include <random>
 #include <thread>
 #include <vector>
-
+#include <cstdio>  
+#include <cstdlib>  
+#include <unistd.h> 
 #include "Shapes.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -166,6 +168,10 @@ int main(int argc, char* argv[]) {
             // Sync with other threads so they don't exit early
             barrier.arrive_and_wait();
         } };
+        for (auto& t : threads) {
+            if (t.joinable()) {
+                t.join();
+            }
     }
 
     // Add in the last necessary parts for our threaded programs.  These
@@ -173,6 +179,7 @@ int main(int argc, char* argv[]) {
     //   having the main thread wait on a thread to keep it from exiting
     //
     // (Look in threaded.cpp for hints)
+
 
     size_t totalInside = 0;
     for (size_t count : insidePoints) {
