@@ -17,7 +17,7 @@ trap "exit" INT
 #
 run() {
     printf "% 3d: " $1
-    /usr/bin/time -f "%e real\t%U user\t%S sys\t%M memory (KB)" $2 ${@:3} > /dev/null
+    /usr/bin/time -f "%e real\t%U user\t%S sys\t%M memory (KB)" ./$2 ${@:3} > /dev/null
 }
 
 # Time the single-threaded version of the program.  Uncomment the line for
