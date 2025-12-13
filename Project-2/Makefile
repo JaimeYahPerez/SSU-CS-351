@@ -3,7 +3,7 @@
 OPT ?= -O2
 STD ?= -std=c++20
 
-SOURCES = $(wildcard *.cpp)
+SOURCES = mean.cpp sdf.cpp
 TARGETS = $(SOURCES:.cpp=.out)
 
 CXXFLAGS = $(OPT) $(STD)
