@@ -121,3 +121,4 @@ int main(int argc, char* argv[]) {
     std::cout << "Samples = " << data.size() << "\n";
     std::cout << "Mean = " << sum / data.size() << "\n";
 }
+*/
