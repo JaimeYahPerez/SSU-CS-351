@@ -1,5 +1,5 @@
 
-/*
+
 #include <barrier>
 #include <iostream>
 #include <numeric>
@@ -14,7 +14,7 @@
 // --- main ---
 //
 int main(int argc, char* argv[]) {
-    //
+    /* //
     // Specify the program's default options:
     //   * the default filename
     //   * the default number of threads
@@ -120,5 +120,6 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Samples = " << data.size() << "\n";
     std::cout << "Mean = " << sum / data.size() << "\n";
+    */
+return 0;
 }
-*/
