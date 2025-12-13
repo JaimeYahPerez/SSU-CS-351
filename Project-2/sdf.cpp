@@ -140,34 +140,22 @@ int main(int argc, char* argv[]) {
 
     for (size_t id = 0; id < threads.size(); ++id) {
         threads[id] = std::jthread{ [&, id]() {
+            // thread-local work here
 
-            // Set up RNG for this thread
-            std::random_device device;
-            std::mt19937 generator(device());
-            std::uniform_int_distribution<unsigned int> uniform(0u, static_cast<unsigned int>(partitions));
-
-            auto rand = [&]() {
-                return static_cast<double>(uniform(generator)) / partitions;
-            };
-
-            // Decide how many samples this thread will process
+            // example structure:
             size_t begin = id * chunkSize;
-            size_t end = (id == numThreads - 1) ? numSamples : begin + chunkSize;
+            size_t end = std::min(begin + chunkSize, numSamples);
 
-            size_t localCount = 0;
-
+            double localSum = 0.0;
             for (size_t i = begin; i < end; ++i) {
-                vec3 p(rand(), rand(), rand());  // point in unit cube
-                if (sdf(p)) {                    // inside cube but outside sphere
-                    ++localCount;
-                }
+                localSum += data[i];
             }
+            partialSums[id] = localSum;
 
-            insidePoints[id] = localCount;
-
-            // Sync with other threads so they don't exit early
+            // barrier is now visible because of [&]
             barrier.arrive_and_wait();
         } };
+    }
         for (auto& t : threads) {
             if (t.joinable()) {
                 t.join();
