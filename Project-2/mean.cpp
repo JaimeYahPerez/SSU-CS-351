@@ -62,6 +62,6 @@ int main(int argc, char* argv[]) {
     // Report the results.
     //
     std::cout << "Samples = " << data.size() << "\n";
-    std::cout << "Mean = " << sum / data.size() << "\n";
+    std::cout << "Mean = " << mean / data.size() << "\n";
 }
 
