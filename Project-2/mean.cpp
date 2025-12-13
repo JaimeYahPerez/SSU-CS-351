@@ -28,7 +28,7 @@ int main(int argc, char* argv[]) {
     std::vector<double> partialSums(numThreads, 0.0);
 
     size_t chunk = (n + numThreads - 1) / numThreads;
-
+    std::barrier barrier(numThreads);
     //-----------------------------------------------------------------------
     //
     // The computational kernel that computes the mean by summing the
@@ -45,6 +45,7 @@ int main(int argc, char* argv[]) {
                 localSum += data[i];
             }
             partialSums[t] = localSum;
+            barrier.arrive_and_wait();
             });
     }
 
