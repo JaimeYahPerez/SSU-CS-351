@@ -9,6 +9,7 @@
 #include <cstdio>  
 #include <cstdlib>  
 #include <unistd.h> 
+#include <barrier>
 #include "Shapes.h"
 
 /////////////////////////////////////////////////////////////////////////////
