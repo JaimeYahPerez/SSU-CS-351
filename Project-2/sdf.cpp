@@ -137,48 +137,61 @@ int main(int argc, char* argv[]) {
     //   (really, you'll need to add four lines to this, one of which is a
     //      closing brace :-)   
     //
-
     for (size_t id = 0; id < threads.size(); ++id) {
         threads[id] = std::jthread{ [&, id]() {
-            // thread-local work here
 
-            // example structure:
+            // Per-thread random number generator
+            std::random_device device;
+            std::mt19937 generator(device());
+            std::uniform_int_distribution<unsigned int> uniform(
+                0u,
+                static_cast<unsigned int>(partitions)
+            );
+
+            auto rand = [&]() {
+                return static_cast<double>(uniform(generator)) / partitions;
+            };
+
+            // Work range for this thread
             size_t begin = id * chunkSize;
-            size_t end = std::min(begin + chunkSize, numSamples);
+            size_t end = (id == numThreads - 1)
+                         ? numSamples
+                         : begin + chunkSize;
 
-            double localSum = 0.0;
+            size_t localCount = 0;
+
             for (size_t i = begin; i < end; ++i) {
-                localSum += data[i];
+                vec3 p(rand(), rand(), rand());  // point in [0,1]^3
+                if (sdf(p)) {                   // inside cube-but-outside-sphere?
+                    ++localCount;               // bool -> 0 or 1
+                }
             }
-            partialSums[id] = localSum;
 
-            // barrier is now visible because of [&]
+            // Save this thread's count
+            insidePoints[id] = localCount;
+
+            // Sync with peer threads
             barrier.arrive_and_wait();
         } };
     }
-        for (auto& t : threads) {
-            if (t.joinable()) {
-                t.join();
-            }
+
+    // Ensure all threads are finished (extra safety)
+    for (auto& t : threads) {
+        if (t.joinable()) {
+            t.join();
         }
-
-        // Add in the last necessary parts for our threaded programs.  These
-        //   may include summing up the individual threads' computations, or
-        //   having the main thread wait on a thread to keep it from exiting
-        //
-        // (Look in threaded.cpp for hints)
-
-
-        size_t totalInside = 0;
-        for (size_t count : insidePoints) {
-            totalInside += count;
-        }
-
-        double volumeEstimate = static_cast<double>(totalInside) /
-            static_cast<double>(numSamples);
-
-        // Because cube volume is 1, hits/numSamples is the volume fraction
-        std::cout << volumeEstimate << "\n";
     }
+
+    // Final reduction
+    size_t totalInside = 0;
+    for (size_t count : insidePoints) {
+        totalInside += count;
     }
+
+    double volumeEstimate =
+        static_cast<double>(totalInside) /
+        static_cast<double>(numSamples);
+
+    std::cout << volumeEstimate << "\n";
+}
 
