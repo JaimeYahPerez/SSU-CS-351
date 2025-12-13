@@ -172,24 +172,25 @@ int main(int argc, char* argv[]) {
             if (t.joinable()) {
                 t.join();
             }
+        }
+
+        // Add in the last necessary parts for our threaded programs.  These
+        //   may include summing up the individual threads' computations, or
+        //   having the main thread wait on a thread to keep it from exiting
+        //
+        // (Look in threaded.cpp for hints)
+
+
+        size_t totalInside = 0;
+        for (size_t count : insidePoints) {
+            totalInside += count;
+        }
+
+        double volumeEstimate = static_cast<double>(totalInside) /
+            static_cast<double>(numSamples);
+
+        // Because cube volume is 1, hits/numSamples is the volume fraction
+        std::cout << volumeEstimate << "\n";
     }
-
-    // Add in the last necessary parts for our threaded programs.  These
-    //   may include summing up the individual threads' computations, or
-    //   having the main thread wait on a thread to keep it from exiting
-    //
-    // (Look in threaded.cpp for hints)
-
-
-    size_t totalInside = 0;
-    for (size_t count : insidePoints) {
-        totalInside += count;
     }
-
-    double volumeEstimate = static_cast<double>(totalInside) /
-        static_cast<double>(numSamples);
-
-    // Because cube volume is 1, hits/numSamples is the volume fraction
-    std::cout << volumeEstimate << "\n";
-}
 
