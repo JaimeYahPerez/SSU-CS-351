@@ -135,31 +135,38 @@ int main(int argc, char* argv[]) {
     //   (really, you'll need to add four lines to this, one of which is a
     //      closing brace :-)   
     //
-    for (size_t id = 0; id < threads.size(); ++id) {
-        threads[id] = std::jthread{ []() {
+    size_t chunkSize = numSamples / numThreads;
 
-            // C++ 11's random number generation system.  These functions
-            //   will generate uniformly distributed unsigned integers in
-            //   the range [0, partitions].  The functions are used in the
-            //   helper function rand() (implemented as a lambda)
+    for (size_t id = 0; id < threads.size(); ++id) {
+        threads[id] = std::jthread{ [&, id]() {
+
+            // Set up RNG for this thread
             std::random_device device;
             std::mt19937 generator(device());
-            std::uniform_int_distribution<unsigned int> uniform(0.0, partitions);
+            std::uniform_int_distribution<unsigned int> uniform(0u, static_cast<unsigned int>(partitions));
 
+            auto rand = [&]() {
+                return static_cast<double>(uniform(generator)) / partitions;
+            };
 
-                // Define a helper function to generate random floating-point
-                //   values in the range [0.0, 1.0]
-                auto rand = [&,partitions]() {
-                    return static_cast<double>(uniform(generator)) / partitions;
-                };
-            
-                // Generate points inside the volume cube.  First, create uniformly
-                //   distributed points in the range [0.0, 1.0] for each dimension.
-                vec3 p(rand(), rand(), rand());
+            // Decide how many samples this thread will process
+            size_t begin = id * chunkSize;
+            size_t end = (id == numThreads - 1) ? numSamples : begin + chunkSize;
 
+            size_t localCount = 0;
 
+            for (size_t i = begin; i < end; ++i) {
+                vec3 p(rand(), rand(), rand());  // point in unit cube
+                if (sdf(p)) {                    // inside cube but outside sphere
+                    ++localCount;
+                }
+            }
+
+            insidePoints[id] = localCount;
+
+            // Sync with other threads so they don't exit early
             barrier.arrive_and_wait();
-        }};
+        } };
     }
 
     // Add in the last necessary parts for our threaded programs.  These
@@ -168,6 +175,15 @@ int main(int argc, char* argv[]) {
     //
     // (Look in threaded.cpp for hints)
 
-    std::cout << static_cast<double>(volumePoints) / numSamples << "\n";
+    size_t totalInside = 0;
+    for (size_t count : insidePoints) {
+        totalInside += count;
+    }
+
+    double volumeEstimate = static_cast<double>(totalInside) /
+        static_cast<double>(numSamples);
+
+    // Because cube volume is 1, hits/numSamples is the volume fraction
+    std::cout << volumeEstimate << "\n";
 }
 
